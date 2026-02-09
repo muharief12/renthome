@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -17,21 +18,30 @@ class RentsTable
             ->columns([
                 TextColumn::make('code')
                     ->searchable(),
-                TextColumn::make('user-id')
+                TextColumn::make('user.name')
+                    ->label('Nama Penyewa')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('product.name')
                     ->searchable(),
-                TextColumn::make('kk')
+                ImageColumn::make('kk')
                     ->searchable(),
                 TextColumn::make('start_date')
+                    ->label('Mulai Sewa')
                     ->date()
                     ->sortable(),
                 TextColumn::make('end_date')
+                    ->label('Akhir Sewa')
                     ->date()
                     ->sortable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->label('Harga')
+                    ->formatStateUsing(fn($state) => number_format($state, 0, ',', '.'))
+                    ->prefix('Rp ')
+                    ->sortable(),
+                TextColumn::make('Total Pembayaran')
+                    ->state(fn($record) => number_format($record->rentPayments->sum('price'), 0, ',', '.'))
+                    ->prefix('Rp ')
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge(),
